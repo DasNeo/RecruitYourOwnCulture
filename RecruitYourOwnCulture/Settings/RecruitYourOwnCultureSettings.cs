@@ -34,9 +34,9 @@ namespace RecruitYourOwnCulture.Settings
             }
         }
 
-        public virtual string FolderName => "RecruitYourOwnCulture";
+        public override string FolderName => "RecruitYourOwnCulture";
 
-        public virtual string FormatType => "json";
+        public override string FormatType => "json";
 
         [SettingPropertyBool("Enable Recruit Only Same Culture", HintText = "Enable Recruit Only Same Culture Volunteer", IsToggle = true, Order = 1, RequireRestart = false)]
         [SettingPropertyGroup("Recruit Only Same Culture", GroupOrder = 1)]

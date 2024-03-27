@@ -19,11 +19,11 @@ using TaleWorlds.Library;
 #nullable enable
 namespace RecruitYourOwnCulture.Patches
 {
-    [HarmonyPatch(typeof(RecruitmentCampaignBehavior))]
+    [HarmonyPatch]
     internal class RecruitmentCampaignBehaviorPatch
     {
         [HarmonyPrefix]
-        [HarmonyPatch]
+        [HarmonyPatch(typeof(RecruitmentCampaignBehavior), "UpdateVolunteersOfNotablesInSettlement")]
         private static bool UpdateVolunteersOfNotablesInSettlementPrefix(Settlement settlement)
         {
             bool flag1 = (!settlement.IsTown || settlement.Town.InRebelliousState) && (!settlement.IsVillage || settlement.Village.Bound.Town.InRebelliousState) && !settlement.IsCastle;
@@ -94,39 +94,40 @@ namespace RecruitYourOwnCulture.Patches
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch]
+        [HarmonyPatch(typeof(CampaignEvents), "OnTroopRecruited")]
         private static bool UpdateOnTroopRecruitedPrefix(
-          Hero recruiter,
-          Settlement settlement,
-          Hero recruitmentSource,
-          CharacterObject troop,
-          int count)
+          Hero recruiterHero, 
+          Settlement recruitmentSettlement, 
+          Hero recruitmentSource, 
+          CharacterObject troop, 
+          int amount)
         {
-            if (recruiter != null && recruiter.Clan != null && recruiter.Clan.IsMinorFaction && !recruiter.MapFaction.IsKingdomFaction)
+            if (recruiterHero != null && recruiterHero.Clan != null && recruiterHero.Clan.IsMinorFaction && !recruiterHero.MapFaction.IsKingdomFaction)
             {
-                Clan clan = recruiter.Clan;
+                Clan clan = recruiterHero.Clan;
                 CultureObject culture = clan.Culture;
-                if (recruiter != null && recruiter.PartyBelongedTo != null && troop.Culture != culture)
+                if (recruiterHero != null && recruiterHero.PartyBelongedTo != null && troop.Culture != culture)
                 {
-                    recruiter.PartyBelongedTo.MemberRoster.RemoveTroop(troop, count, new UniqueTroopDescriptor(), 0);
+                    recruiterHero.PartyBelongedTo.MemberRoster.RemoveTroop(troop, amount, new UniqueTroopDescriptor(), 0);
                     troop = TroopUtil.tryToLevel(clan.BasicTroop, troop.Tier);
-                    recruiter.PartyBelongedTo.AddElementToMemberRoster(troop, count, false);
+                    recruiterHero.PartyBelongedTo.AddElementToMemberRoster(troop, amount, false);
                 }
-                if (recruiter != null && recruiter.PartyBelongedTo != null && recruiter.GetPerkValue(DefaultPerks.Leadership.FamousCommander))
-                    recruiter.PartyBelongedTo.MemberRoster.AddXpToTroop((int)DefaultPerks.Leadership.FamousCommander.SecondaryBonus * count, troop);
-                SkillLevelingManager.OnTroopRecruited(recruiter, count, troop.Tier);
-                if (recruiter != null && recruiter.PartyBelongedTo != null && troop.Occupation == Occupation.Bandit)
-                    SkillLevelingManager.OnBanditsRecruited(recruiter.PartyBelongedTo, troop, count);
+                if (recruiterHero != null && recruiterHero.PartyBelongedTo != null && recruiterHero.GetPerkValue(DefaultPerks.Leadership.FamousCommander))
+                    recruiterHero.PartyBelongedTo.MemberRoster.AddXpToTroop((int)DefaultPerks.Leadership.FamousCommander.SecondaryBonus * amount, troop);
+                SkillLevelingManager.OnTroopRecruited(recruiterHero, amount, troop.Tier);
+                if (recruiterHero != null && recruiterHero.PartyBelongedTo != null && troop.Occupation == Occupation.Bandit)
+                    SkillLevelingManager.OnBanditsRecruited(recruiterHero.PartyBelongedTo, troop, amount);
             }
             else
             {
-                if (recruiter != null && recruiter.PartyBelongedTo != null && recruiter.GetPerkValue(DefaultPerks.Leadership.FamousCommander))
-                    recruiter.PartyBelongedTo.MemberRoster.AddXpToTroop((int)DefaultPerks.Leadership.FamousCommander.SecondaryBonus * count, troop);
-                SkillLevelingManager.OnTroopRecruited(recruiter, count, troop.Tier);
-                if (recruiter != null && recruiter.PartyBelongedTo != null && troop.Occupation == Occupation.Bandit)
-                    SkillLevelingManager.OnBanditsRecruited(recruiter.PartyBelongedTo, troop, count);
+                if (recruiterHero != null && recruiterHero.PartyBelongedTo != null && recruiterHero.GetPerkValue(DefaultPerks.Leadership.FamousCommander))
+                    recruiterHero.PartyBelongedTo.MemberRoster.AddXpToTroop((int)DefaultPerks.Leadership.FamousCommander.SecondaryBonus * amount, troop);
+                SkillLevelingManager.OnTroopRecruited(recruiterHero, amount, troop.Tier);
+                if (recruiterHero != null && recruiterHero.PartyBelongedTo != null && troop.Occupation == Occupation.Bandit)
+                    SkillLevelingManager.OnBanditsRecruited(recruiterHero.PartyBelongedTo, troop, amount);
             }
             return false;
         }
+
     }
 }

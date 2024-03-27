@@ -18,7 +18,7 @@ namespace RecruitYourOwnCulture.Model
 {
     internal class PrisonerRecruitmentCalculationModel : DefaultPrisonerRecruitmentCalculationModel
     {
-        public virtual bool IsPrisonerRecruitable(
+        public override bool IsPrisonerRecruitable(
           PartyBase party,
           CharacterObject character,
           out int conformityNeeded)

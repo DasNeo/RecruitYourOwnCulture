@@ -12,7 +12,7 @@ namespace RecruitYourOwnCulture
 {
     public class SubModule : MBSubModuleBase
     {
-        protected virtual void OnGameStart(Game game, IGameStarter gameStarterObject)
+        protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
         {
             if (!(game.GameType is Campaign))
                 return;
@@ -22,15 +22,15 @@ namespace RecruitYourOwnCulture
             ((CampaignGameStarter)gameStarterObject).AddModel((GameModel)new PrisonerRecruitmentCalculationModel());
         }
 
-        protected virtual void OnSubModuleLoad()
+        protected override void OnSubModuleLoad()
         {
             base.OnSubModuleLoad();
-            new Harmony("com.krisan.recruit_own_culture").PatchAll();
+            new Harmony("com.dasneo.recruit_own_culture").PatchAll();
             UIExtender uiExtender = new UIExtender("RecruitYourOwnCulture");
             uiExtender.Register(typeof(SubModule).Assembly);
         }
 
-        protected virtual void OnBeforeInitialModuleScreenSetAsRoot()
+        protected override void OnBeforeInitialModuleScreenSetAsRoot()
         {
             base.OnBeforeInitialModuleScreenSetAsRoot();
             InformationManager.DisplayMessage(new InformationMessage("Recruit Your Own Culture Loaded", Color.FromUint(4282569842U)));

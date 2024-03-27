@@ -13,12 +13,12 @@ using TaleWorlds.CampaignSystem.Settlements;
 #nullable enable
 namespace RecruitYourOwnCulture.Patches
 {
-  [HarmonyPatch(typeof (AiVisitSettlementBehavior))]
+  [HarmonyPatch(typeof (AiVisitSettlementBehavior), "ApproximateNumberOfVolunteersCanBeRecruitedFromSettlement")]
   internal class AiVisitSettlementBehaviorPatch
   {
     [HarmonyPrefix]
     [HarmonyPatch]
-    public static bool UpdateApproximateNumberOfVolunteersCanBeRecruitedFromSettlementPrefix(
+    public static bool ApproximateNumberOfVolunteersCanBeRecruitedFromSettlementPrefix(
       ref int __result,
       Hero hero,
       Settlement settlement)

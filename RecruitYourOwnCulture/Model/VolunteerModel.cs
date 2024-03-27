@@ -1,4 +1,6 @@
-﻿using MCM.Abstractions.Base.Global;
+﻿using AdonnaysTroopChanger.Settings;
+using AdonnaysTroopChanger.XMLReader;
+using MCM.Abstractions.Base.Global;
 using RecruitYourOwnCulture.Settings;
 using System;
 using TaleWorlds.CampaignSystem;
@@ -7,6 +9,7 @@ using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Localization;
+using TaleWorlds.ObjectSystem;
 
 namespace RecruitYourOwnCulture.Model
 {
@@ -14,7 +17,21 @@ namespace RecruitYourOwnCulture.Model
     {
         public int MaxVolunteerLimit => GlobalSettings<RecruitYourOwnCultureSettings>.Instance.VolunteerLimit;
 
-        public virtual int MaximumIndexHeroCanRecruitFromHero(
+        public override CharacterObject GetBasicVolunteer(Hero sellerHero)
+        {
+            try
+            {
+                CharacterObject basicVolunteer = ATCConfig.GetFactionRecruit(sellerHero);
+                while (((BasicCharacterObject)basicVolunteer).Level < ATCSettings.LevelRecruitsUpToTier * 5 + 1 && basicVolunteer.UpgradeTargets.Length != 0)
+                    basicVolunteer = basicVolunteer.UpgradeTargets[MBRandom.RandomInt(basicVolunteer.UpgradeTargets.Length)];
+                return basicVolunteer;
+            } catch(Exception)
+            {
+                return base.GetBasicVolunteer(sellerHero);
+            }
+        }
+
+        public override int MaximumIndexHeroCanRecruitFromHero(
           Hero buyerHero,
           Hero sellerHero,
           int useValueAsRelation = -101)
